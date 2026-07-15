@@ -50,6 +50,39 @@ Route::middleware([
             ->middleware('permission:members.approve')->name('members.approve');
     });
 
+    // Accounting / General Ledger (Phase 3)
+    Route::middleware(['auth', 'verified'])->prefix('gl')->name('gl.')->group(function () {
+        Route::get('accounts', [\App\Http\Controllers\GlAccountController::class, 'index'])
+            ->middleware('permission:gl.view')->name('accounts.index');
+        Route::post('accounts', [\App\Http\Controllers\GlAccountController::class, 'store'])
+            ->middleware('permission:gl.manage_coa')->name('accounts.store');
+        Route::post('accounts/{account}/toggle', [\App\Http\Controllers\GlAccountController::class, 'toggle'])
+            ->middleware('permission:gl.manage_coa')->name('accounts.toggle');
+        Route::get('accounts/{account}/ledger', [\App\Http\Controllers\GlAccountController::class, 'ledger'])
+            ->middleware('permission:gl.view')->name('accounts.ledger');
+
+        Route::get('trial-balance', [\App\Http\Controllers\GlAccountController::class, 'trialBalance'])
+            ->middleware('permission:gl.view')->name('trial-balance');
+
+        Route::get('journal', [\App\Http\Controllers\JournalEntryController::class, 'index'])
+            ->middleware('permission:gl.view')->name('journal.index');
+        Route::get('journal/create', [\App\Http\Controllers\JournalEntryController::class, 'create'])
+            ->middleware('permission:gl.post')->name('journal.create');
+        Route::post('journal', [\App\Http\Controllers\JournalEntryController::class, 'store'])
+            ->middleware('permission:gl.post')->name('journal.store');
+        Route::get('journal/{journal}', [\App\Http\Controllers\JournalEntryController::class, 'show'])
+            ->middleware('permission:gl.view')->name('journal.show');
+        Route::post('journal/{journal}/reverse', [\App\Http\Controllers\JournalEntryController::class, 'reverse'])
+            ->middleware('permission:gl.post')->name('journal.reverse');
+
+        Route::get('periods', [\App\Http\Controllers\FinancialPeriodController::class, 'index'])
+            ->middleware('permission:gl.view')->name('periods.index');
+        Route::post('periods/{period}/close', [\App\Http\Controllers\FinancialPeriodController::class, 'close'])
+            ->middleware('permission:gl.close_period')->name('periods.close');
+        Route::post('periods/{period}/reopen', [\App\Http\Controllers\FinancialPeriodController::class, 'reopen'])
+            ->middleware('permission:gl.close_period')->name('periods.reopen');
+    });
+
     require __DIR__ . '/settings.php';
     require __DIR__ . '/auth.php';
 });

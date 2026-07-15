@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\GlAccount;
 use App\Models\Member;
 use App\Models\Setting;
 use App\Models\User;
@@ -15,6 +16,8 @@ use InvalidArgumentException;
  */
 class MemberService
 {
+    public function __construct(private readonly TransactionService $transactions) {}
+
     /**
      * Register a new member in `pending` status (FR-MEM-01..05).
      *
@@ -42,8 +45,7 @@ class MemberService
     /**
      * Approve (activate) a pending member — maker-checker (FR-MEM-05).
      * The approver must be a different user from the creator.
-     *
-     * TODO Phase 3: post membership fee to GL on activation (FR-MEM-06).
+     * Posts the membership fee to the GL when configured (FR-MEM-06).
      */
     public function approve(Member $member, User $approver): Member
     {
@@ -55,14 +57,30 @@ class MemberService
             throw new InvalidArgumentException('A member cannot be approved by the same user who registered them (maker-checker).');
         }
 
-        $member->update([
-            'status' => 'active',
-            'approved_by' => $approver->id,
-            'approved_at' => now(),
-            'joined_at' => today(),
-        ]);
+        return DB::transaction(function () use ($member, $approver) {
+            $member->update([
+                'status' => 'active',
+                'approved_by' => $approver->id,
+                'approved_at' => now(),
+                'joined_at' => today(),
+            ]);
 
-        return $member;
+            // FR-MEM-06: membership fee — Dr Teller Cash / Cr Membership Fees
+            $fee = (string) Setting::get('membership_fee', '0');
+            if (bccomp($fee, '0', 2) === 1) {
+                $this->transactions->post(
+                    description: "Membership fee — {$member->member_no} {$member->full_name}",
+                    lines: [
+                        ['account' => GlAccount::byCode('1020'), 'debit' => $fee],
+                        ['account' => GlAccount::byCode('4040'), 'credit' => $fee],
+                    ],
+                    source: $member,
+                    postedBy: $approver,
+                );
+            }
+
+            return $member;
+        });
     }
 
     /**

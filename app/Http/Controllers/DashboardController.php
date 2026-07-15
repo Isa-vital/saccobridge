@@ -33,8 +33,8 @@ class DashboardController extends Controller
                 'members_total' => (int) $memberStats->total,
                 'members_active' => (int) $memberStats->active,
                 'members_pending' => (int) $memberStats->pending,
-                // Placeholders until Phase 4/6 land:
-                'savings_balance' => null,
+                // CHANGED: savings now live (sum of account balances); loans in Phase 6
+                'savings_balance' => (float) \App\Models\SavingsAccount::where('status', '!=', 'closed')->sum('balance'),
                 'loans_outstanding' => null,
             ],
             'recentMembers' => $recentMembers,

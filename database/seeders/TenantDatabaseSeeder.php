@@ -15,5 +15,6 @@ class TenantDatabaseSeeder extends Seeder
     {
         $this->call(RolesAndPermissionsSeeder::class);
         $this->call(ChartOfAccountsSeeder::class);
+        $this->call(SavingsProductSeeder::class);
     }
 }

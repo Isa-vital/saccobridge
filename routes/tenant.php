@@ -83,6 +83,46 @@ Route::middleware([
             ->middleware('permission:gl.close_period')->name('periods.reopen');
     });
 
+    // Savings (Phase 4)
+    Route::middleware(['auth', 'verified'])->prefix('savings')->name('savings.')->group(function () {
+        Route::get('products', [\App\Http\Controllers\SavingsProductController::class, 'index'])
+            ->middleware('permission:savings.view')->name('products.index');
+        Route::post('products', [\App\Http\Controllers\SavingsProductController::class, 'store'])
+            ->middleware('permission:admin.settings')->name('products.store');
+        Route::post('products/{product}/toggle', [\App\Http\Controllers\SavingsProductController::class, 'toggle'])
+            ->middleware('permission:admin.settings')->name('products.toggle');
+
+        Route::get('accounts', [\App\Http\Controllers\SavingsAccountController::class, 'index'])
+            ->middleware('permission:savings.view')->name('accounts.index');
+        Route::post('accounts', [\App\Http\Controllers\SavingsAccountController::class, 'store'])
+            ->middleware('permission:savings.open')->name('accounts.store');
+        Route::get('accounts/{account}', [\App\Http\Controllers\SavingsAccountController::class, 'show'])
+            ->middleware('permission:savings.view')->name('accounts.show');
+
+        Route::get('teller', [\App\Http\Controllers\TellerController::class, 'station'])
+            ->middleware('permission:savings.view')->name('teller.station');
+        Route::post('teller/deposit', [\App\Http\Controllers\TellerController::class, 'deposit'])
+            ->middleware('permission:savings.deposit')->name('teller.deposit');
+        Route::post('teller/withdraw', [\App\Http\Controllers\TellerController::class, 'withdraw'])
+            ->middleware('permission:savings.withdraw')->name('teller.withdraw');
+
+        Route::get('approvals', [\App\Http\Controllers\TellerController::class, 'approvals'])
+            ->middleware('permission:savings.approve')->name('approvals.index');
+        Route::post('approvals/{transaction}/approve', [\App\Http\Controllers\TellerController::class, 'approve'])
+            ->middleware('permission:savings.approve')->name('approvals.approve');
+        Route::post('approvals/{transaction}/reject', [\App\Http\Controllers\TellerController::class, 'reject'])
+            ->middleware('permission:savings.approve')->name('approvals.reject');
+
+        Route::get('sessions', [\App\Http\Controllers\TellerSessionController::class, 'index'])
+            ->middleware('permission:savings.view')->name('sessions.index');
+        Route::post('sessions', [\App\Http\Controllers\TellerSessionController::class, 'open'])
+            ->middleware('permission:savings.approve')->name('sessions.open');
+        Route::post('sessions/{session}/close', [\App\Http\Controllers\TellerSessionController::class, 'close'])
+            ->name('sessions.close'); // ownership checked in controller
+        Route::post('sessions/{session}/reconcile', [\App\Http\Controllers\TellerSessionController::class, 'reconcile'])
+            ->middleware('permission:savings.approve')->name('sessions.reconcile');
+    });
+
     require __DIR__ . '/settings.php';
     require __DIR__ . '/auth.php';
 });

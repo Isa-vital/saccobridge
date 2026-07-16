@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class VaultMovement extends Model
 {
     protected $fillable = [
-        'direction', 'amount', 'teller_session_id', 'journal_entry_id',
-        'performed_by', 'approved_by',
+        'direction',
+        'amount',
+        'teller_session_id',
+        'journal_entry_id',
+        'performed_by',
+        'approved_by',
     ];
 
     protected function casts(): array

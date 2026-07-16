@@ -14,10 +14,18 @@ class SavingsProduct extends Model
     ];
 
     protected $fillable = [
-        'code', 'name', 'interest_rate', 'interest_basis', 'interest_posting',
-        'min_opening_deposit', 'min_balance', 'withdrawal_fee',
-        'max_withdrawals_per_month', 'gl_liability_account_id',
-        'gl_interest_expense_account_id', 'is_active',
+        'code',
+        'name',
+        'interest_rate',
+        'interest_basis',
+        'interest_posting',
+        'min_opening_deposit',
+        'min_balance',
+        'withdrawal_fee',
+        'max_withdrawals_per_month',
+        'gl_liability_account_id',
+        'gl_interest_expense_account_id',
+        'is_active',
     ];
 
     protected function casts(): array

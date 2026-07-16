@@ -21,9 +21,7 @@ use Illuminate\Support\Facades\DB;
  */
 class SavingsService
 {
-    public function __construct(private readonly TransactionService $transactions)
-    {
-    }
+    public function __construct(private readonly TransactionService $transactions) {}
 
     /** Open an account for an ACTIVE member with the product's min opening deposit (FR-SAV-02). */
     public function openAccount(Member $member, SavingsProduct $product, string $openingDeposit, User $teller): SavingsAccount
@@ -111,7 +109,7 @@ class SavingsService
             if (bccomp($totalDebit, $account->availableBalance(), 2) === 1) {
                 throw new DomainException(
                     "Insufficient available balance. Available: {$account->availableBalance()} (after blocks, min balance" .
-                    (bccomp($fee, '0.00', 2) === 1 ? " and fee {$fee}" : '') . ').'
+                        (bccomp($fee, '0.00', 2) === 1 ? " and fee {$fee}" : '') . ').'
                 );
             }
 
@@ -270,6 +268,39 @@ class SavingsService
                 ],
                 date: $asOf,
                 source: $transaction,
+            );
+
+            $transaction->update(['journal_entry_id' => $entry->id]);
+
+            return $transaction;
+        });
+    }
+
+    /**
+     * Credit a dividend into a savings account (non-cash — settles the
+     * dividends payable liability). GL: Dr 2040 Dividends Payable / Cr product liability.
+     */
+    public function creditDividend(SavingsAccount $account, string $amount, string $memo, ?User $performer = null): SavingsTransaction
+    {
+        $this->assertPositive($amount);
+
+        return DB::transaction(function () use ($account, $amount, $memo, $performer) {
+            $account = SavingsAccount::whereKey($account->id)->lockForUpdate()->firstOrFail();
+            $this->assertAccountActive($account);
+
+            $newBalance = bcadd($account->balance, $amount, 2);
+            $account->update(['balance' => $newBalance]);
+
+            $transaction = $this->record($account, 'dividend_credit', $amount, $newBalance, $performer, null, $memo);
+
+            $entry = $this->transactions->post(
+                description: "Dividend credit {$transaction->reference} — {$account->account_no}",
+                lines: [
+                    ['account' => GlCodes::id('2040'), 'debit' => $amount],
+                    ['account' => $account->product->gl_liability_account_id, 'credit' => $amount],
+                ],
+                source: $transaction,
+                postedBy: $performer,
             );
 
             $transaction->update(['journal_entry_id' => $entry->id]);

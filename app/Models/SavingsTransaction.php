@@ -8,9 +8,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class SavingsTransaction extends Model
 {
     protected $fillable = [
-        'reference', 'savings_account_id', 'type', 'amount', 'balance_after',
-        'status', 'journal_entry_id', 'teller_session_id', 'performed_by',
-        'approved_by', 'value_date', 'memo',
+        'reference',
+        'savings_account_id',
+        'type',
+        'amount',
+        'balance_after',
+        'status',
+        'journal_entry_id',
+        'teller_session_id',
+        'performed_by',
+        'approved_by',
+        'value_date',
+        'memo',
     ];
 
     protected function casts(): array

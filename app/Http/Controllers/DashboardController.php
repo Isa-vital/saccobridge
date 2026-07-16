@@ -20,7 +20,7 @@ class DashboardController extends Controller
             ->orderByDesc('id')
             ->limit(5)
             ->get()
-            ->map(fn (Member $member) => [
+            ->map(fn(Member $member) => [
                 'id' => $member->id,
                 'member_no' => $member->member_no,
                 'full_name' => $member->full_name,

@@ -14,9 +14,7 @@ use Inertia\Response;
 
 class SavingsAccountController extends Controller
 {
-    public function __construct(private readonly SavingsService $savings)
-    {
-    }
+    public function __construct(private readonly SavingsService $savings) {}
 
     public function index(Request $request): Response
     {
@@ -25,12 +23,12 @@ class SavingsAccountController extends Controller
             ->when($request->filled('search'), function ($query) use ($request) {
                 $term = $request->string('search')->toString();
                 $query->where('account_no', 'like', "%{$term}%")
-                    ->orWhereHas('member', fn ($q) => $q->search($term));
+                    ->orWhereHas('member', fn($q) => $q->search($term));
             })
             ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString()
-            ->through(fn (SavingsAccount $account) => [
+            ->through(fn(SavingsAccount $account) => [
                 'id' => $account->id,
                 'account_no' => $account->account_no,
                 'member' => $account->member->member_no . ' — ' . $account->member->full_name,
@@ -88,7 +86,7 @@ class SavingsAccountController extends Controller
             ->orderByDesc('id')
             ->paginate(25)
             ->withQueryString()
-            ->through(fn ($txn) => [
+            ->through(fn($txn) => [
                 'id' => $txn->id,
                 'reference' => $txn->reference,
                 'value_date' => $txn->value_date->format('Y-m-d'),

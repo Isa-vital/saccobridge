@@ -123,6 +123,32 @@ Route::middleware([
             ->middleware('permission:savings.approve')->name('sessions.reconcile');
     });
 
+    // Shares & dividends (Phase 5)
+    Route::middleware(['auth', 'verified'])->prefix('shares')->name('shares.')->group(function () {
+        Route::get('register', [\App\Http\Controllers\ShareController::class, 'register'])
+            ->middleware('permission:shares.view')->name('register');
+        Route::post('purchase', [\App\Http\Controllers\ShareController::class, 'purchase'])
+            ->middleware('permission:shares.post')->name('purchase');
+        Route::post('{account}/transfer', [\App\Http\Controllers\ShareController::class, 'transfer'])
+            ->middleware('permission:shares.post')->name('transfer');
+        Route::post('{account}/redeem', [\App\Http\Controllers\ShareController::class, 'redeem'])
+            ->middleware('permission:shares.post')->name('redeem');
+
+        Route::get('products', [\App\Http\Controllers\ShareController::class, 'products'])
+            ->middleware('permission:shares.view')->name('products');
+        Route::post('products', [\App\Http\Controllers\ShareController::class, 'storeProduct'])
+            ->middleware('permission:admin.settings')->name('products.store');
+
+        Route::get('dividends', [\App\Http\Controllers\DividendController::class, 'index'])
+            ->middleware('permission:shares.view')->name('dividends.index');
+        Route::post('dividends', [\App\Http\Controllers\DividendController::class, 'declare'])
+            ->middleware('permission:dividends.declare')->name('dividends.declare');
+        Route::post('dividends/{dividend}/approve', [\App\Http\Controllers\DividendController::class, 'approve'])
+            ->middleware('permission:dividends.declare')->name('dividends.approve');
+        Route::post('dividends/{dividend}/distribute', [\App\Http\Controllers\DividendController::class, 'distribute'])
+            ->middleware('permission:dividends.declare')->name('dividends.distribute');
+    });
+
     require __DIR__ . '/settings.php';
     require __DIR__ . '/auth.php';
 });

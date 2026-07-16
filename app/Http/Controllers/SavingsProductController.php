@@ -18,7 +18,7 @@ class SavingsProductController extends Controller
             ->withCount('accounts')
             ->orderBy('code')
             ->get()
-            ->map(fn (SavingsProduct $product) => [
+            ->map(fn(SavingsProduct $product) => [
                 'id' => $product->id,
                 'code' => $product->code,
                 'name' => $product->name,

@@ -13,8 +13,15 @@ return new class extends Migration
             $table->string('reference', 30)->unique(); // receipt no, e.g. RCT-000001
             $table->foreignId('savings_account_id')->constrained('savings_accounts')->restrictOnDelete();
             $table->enum('type', [
-                'deposit', 'withdrawal', 'transfer_in', 'transfer_out',
-                'interest', 'fee', 'dividend_credit', 'loan_disbursement', 'loan_repayment_debit',
+                'deposit',
+                'withdrawal',
+                'transfer_in',
+                'transfer_out',
+                'interest',
+                'fee',
+                'dividend_credit',
+                'loan_disbursement',
+                'loan_repayment_debit',
             ]);
             $table->decimal('amount', 20, 2); // always positive
             $table->decimal('balance_after', 20, 2); // running balance snapshot

@@ -9,8 +9,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TellerSession extends Model
 {
     protected $fillable = [
-        'user_id', 'opening_float', 'closing_declared', 'closing_system',
-        'variance', 'status', 'opened_by', 'closed_at',
+        'user_id',
+        'opening_float',
+        'closing_declared',
+        'closing_system',
+        'variance',
+        'status',
+        'opened_by',
+        'closed_at',
     ];
 
     protected function casts(): array

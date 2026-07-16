@@ -13,8 +13,14 @@ class SavingsAccount extends Model
     use HasFactory;
 
     protected $fillable = [
-        'account_no', 'member_id', 'savings_product_id', 'balance',
-        'blocked_amount', 'status', 'opened_at', 'closed_at',
+        'account_no',
+        'member_id',
+        'savings_product_id',
+        'balance',
+        'blocked_amount',
+        'status',
+        'opened_at',
+        'closed_at',
     ];
 
     protected function casts(): array

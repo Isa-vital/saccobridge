@@ -6,7 +6,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 // CHANGED: BookOpen/Folder icons removed with starter-kit footer links
-import { Banknote, BookText, CalendarCheck, CheckSquare, LayoutGrid, ListTree, PiggyBank, Scale, Users, Wallet } from 'lucide-vue-next';
+import { Award, Banknote, BookText, CalendarCheck, CheckSquare, Gift, LayoutGrid, ListTree, PiggyBank, Scale, Users, Wallet } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -44,6 +44,21 @@ const mainNavItems: NavItem[] = [
         title: 'Savings Products',
         href: '/savings/products',
         icon: PiggyBank,
+    },
+    {
+        title: 'Share Register',
+        href: '/shares/register',
+        icon: Award,
+    },
+    {
+        title: 'Dividends',
+        href: '/shares/dividends',
+        icon: Gift,
+    },
+    {
+        title: 'Share Products',
+        href: '/shares/products',
+        icon: Award,
     },
     {
         title: 'Journal',

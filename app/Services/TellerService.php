@@ -15,9 +15,7 @@ use Illuminate\Support\Facades\DB;
  */
 class TellerService
 {
-    public function __construct(private readonly TransactionService $transactions)
-    {
-    }
+    public function __construct(private readonly TransactionService $transactions) {}
 
     /**
      * Open a teller session by issuing float from the vault.

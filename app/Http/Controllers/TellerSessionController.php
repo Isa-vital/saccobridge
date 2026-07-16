@@ -13,9 +13,7 @@ use Inertia\Response;
 
 class TellerSessionController extends Controller
 {
-    public function __construct(private readonly TellerService $tellers)
-    {
-    }
+    public function __construct(private readonly TellerService $tellers) {}
 
     public function index(Request $request): Response
     {
@@ -23,7 +21,7 @@ class TellerSessionController extends Controller
             ->with(['teller:id,name', 'opener:id,name'])
             ->orderByDesc('id')
             ->paginate(15)
-            ->through(fn (TellerSession $session) => [
+            ->through(fn(TellerSession $session) => [
                 'id' => $session->id,
                 'teller' => $session->teller->name,
                 'opening_float' => $session->opening_float,

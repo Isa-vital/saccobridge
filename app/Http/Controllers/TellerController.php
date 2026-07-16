@@ -18,9 +18,7 @@ use Inertia\Response;
  */
 class TellerController extends Controller
 {
-    public function __construct(private readonly SavingsService $savings)
-    {
-    }
+    public function __construct(private readonly SavingsService $savings) {}
 
     /** Teller station page. */
     public function station(Request $request): Response
@@ -118,7 +116,7 @@ class TellerController extends Controller
             ->where('status', 'pending_approval')
             ->orderBy('id')
             ->get()
-            ->map(fn (SavingsTransaction $txn) => [
+            ->map(fn(SavingsTransaction $txn) => [
                 'id' => $txn->id,
                 'reference' => $txn->reference,
                 'account_no' => $txn->account->account_no,

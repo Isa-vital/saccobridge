@@ -149,6 +149,32 @@ Route::middleware([
             ->middleware('permission:dividends.declare')->name('dividends.distribute');
     });
 
+    // Loans (Phase 6)
+    Route::middleware(['auth', 'verified'])->prefix('loans')->name('loans.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\LoanController::class, 'index'])
+            ->middleware('permission:loans.view')->name('index');
+        Route::get('create', [\App\Http\Controllers\LoanController::class, 'create'])
+            ->middleware('permission:loans.create')->name('create');
+        Route::post('/', [\App\Http\Controllers\LoanController::class, 'store'])
+            ->middleware('permission:loans.create')->name('store');
+
+        Route::get('products', [\App\Http\Controllers\LoanController::class, 'products'])
+            ->middleware('permission:loans.view')->name('products');
+        Route::post('products', [\App\Http\Controllers\LoanController::class, 'storeProduct'])
+            ->middleware('permission:admin.settings')->name('products.store');
+
+        Route::get('{loan}', [\App\Http\Controllers\LoanController::class, 'show'])
+            ->middleware('permission:loans.view')->name('show');
+        Route::post('{loan}/approve', [\App\Http\Controllers\LoanController::class, 'approve'])
+            ->middleware('permission:loans.approve')->name('approve');
+        Route::post('{loan}/reject', [\App\Http\Controllers\LoanController::class, 'reject'])
+            ->middleware('permission:loans.approve')->name('reject');
+        Route::post('{loan}/disburse', [\App\Http\Controllers\LoanController::class, 'disburse'])
+            ->middleware('permission:loans.disburse')->name('disburse');
+        Route::post('{loan}/repay', [\App\Http\Controllers\LoanController::class, 'repay'])
+            ->middleware('permission:loans.repay')->name('repay');
+    });
+
     require __DIR__ . '/settings.php';
     require __DIR__ . '/auth.php';
 });

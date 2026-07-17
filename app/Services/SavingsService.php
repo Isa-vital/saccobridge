@@ -309,6 +309,51 @@ class SavingsService
         });
     }
 
+    /**
+     * Credit a loan disbursement into savings. NO GL posting here — the loan
+     * disbursement journal entry (LoanService) already credits the savings
+     * liability account.
+     */
+    public function creditLoanDisbursement(SavingsAccount $account, string $amount, string $memo, ?User $performer = null): SavingsTransaction
+    {
+        $this->assertPositive($amount);
+
+        return DB::transaction(function () use ($account, $amount, $memo, $performer) {
+            $account = SavingsAccount::whereKey($account->id)->lockForUpdate()->firstOrFail();
+            $this->assertAccountActive($account);
+
+            $newBalance = bcadd($account->balance, $amount, 2);
+            $account->update(['balance' => $newBalance]);
+
+            return $this->record($account, 'loan_disbursement', $amount, $newBalance, $performer, null, $memo);
+        });
+    }
+
+    /**
+     * Debit a loan repayment from savings. NO GL posting here — the loan
+     * repayment journal entry (LoanService) already debits the savings
+     * liability account. Respects blocked amounts EXCEPT the member's own
+     * pledge (repaying reduces the exposure the block protects).
+     */
+    public function debitLoanRepayment(SavingsAccount $account, string $amount, string $memo, ?User $performer = null): SavingsTransaction
+    {
+        $this->assertPositive($amount);
+
+        return DB::transaction(function () use ($account, $amount, $memo, $performer) {
+            $account = SavingsAccount::whereKey($account->id)->lockForUpdate()->firstOrFail();
+            $this->assertAccountActive($account);
+
+            if (bccomp($amount, (string) $account->balance, 2) === 1) {
+                throw new \DomainException("Savings balance ({$account->balance}) cannot cover this repayment.");
+            }
+
+            $newBalance = bcsub($account->balance, $amount, 2);
+            $account->update(['balance' => $newBalance]);
+
+            return $this->record($account, 'loan_repayment_debit', $amount, $newBalance, $performer, null, $memo);
+        });
+    }
+
     // ── internals ──────────────────────────────────────────────────────────
 
     /** Execute the cash movement of an (approved or small) withdrawal. */

@@ -35,7 +35,7 @@ class DashboardController extends Controller
                 'members_pending' => (int) $memberStats->pending,
                 // CHANGED: savings now live (sum of account balances); loans in Phase 6
                 'savings_balance' => (float) \App\Models\SavingsAccount::where('status', '!=', 'closed')->sum('balance'),
-                'loans_outstanding' => null,
+                'loans_outstanding' => (float) \App\Models\Loan::where('status', 'active')->sum('principal_outstanding'),
             ],
             'recentMembers' => $recentMembers,
         ]);

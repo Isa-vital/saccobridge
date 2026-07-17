@@ -70,7 +70,6 @@ const ugx = (value: number | null) =>
                 <div class="rounded-xl border border-sidebar-border/70 p-4 dark:border-sidebar-border">
                     <div class="flex items-center gap-2 text-sm text-muted-foreground"><HandCoins class="h-4 w-4" /> Loans outstanding</div>
                     <div class="mt-2 text-2xl font-semibold">{{ ugx(stats.loans_outstanding) }}</div>
-                    <div class="text-xs text-muted-foreground">Available after Loans module</div>
                 </div>
             </div>
 

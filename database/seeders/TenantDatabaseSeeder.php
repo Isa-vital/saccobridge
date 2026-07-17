@@ -17,5 +17,6 @@ class TenantDatabaseSeeder extends Seeder
         $this->call(ChartOfAccountsSeeder::class);
         $this->call(SavingsProductSeeder::class);
         $this->call(ShareProductSeeder::class);
+        $this->call(LoanProductSeeder::class);
     }
 }

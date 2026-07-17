@@ -53,6 +53,11 @@ class Member extends Model
         return $this->hasMany(MemberDocument::class);
     }
 
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class);
+    }
+
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');

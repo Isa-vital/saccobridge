@@ -175,6 +175,16 @@ Route::middleware([
             ->middleware('permission:loans.repay')->name('repay');
     });
 
+    // UMRA Reports (Phase 7)
+    Route::middleware(['auth', 'verified', 'permission:reports.view'])->prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
+        Route::get('balance-sheet', [\App\Http\Controllers\ReportController::class, 'balanceSheet'])->name('balance-sheet');
+        Route::get('income-statement', [\App\Http\Controllers\ReportController::class, 'incomeStatement'])->name('income-statement');
+        Route::get('par', [\App\Http\Controllers\ReportController::class, 'par'])->name('par');
+        Route::get('savings-summary', [\App\Http\Controllers\ReportController::class, 'savingsSummary'])->name('savings-summary');
+        Route::get('{report}/export/{format}', [\App\Http\Controllers\ReportController::class, 'export'])->name('export');
+    });
+
     require __DIR__ . '/settings.php';
     require __DIR__ . '/auth.php';
 });
